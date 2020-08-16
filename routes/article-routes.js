@@ -34,7 +34,7 @@ const DUMMY_ARTICLES = [
   },
 ];
 
-// Get article by articleID
+// Get specific article by articleID
 router.get("/:aid", (req, res, next) => {
   const articleId = req.params.aid;
   const article = DUMMY_ARTICLES.find((art) => {
@@ -43,4 +43,15 @@ router.get("/:aid", (req, res, next) => {
   res.json({ article: article });
 });
 
+// Get list of articles created by specific user/creator by creatorID
+router.get("/user/:uid", (req, res, next) => {
+  const userId = req.params.uid;
+  const articles = [];
+  DUMMY_ARTICLES.map((art) => {
+    if (art.creator === userId) {
+      return articles.push(art);
+    }
+  });
+  res.json({ articles: articles });
+});
 module.exports = router;
