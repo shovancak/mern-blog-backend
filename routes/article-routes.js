@@ -40,6 +40,15 @@ router.get("/:aid", (req, res, next) => {
   const article = DUMMY_ARTICLES.find((art) => {
     return art.id === articleId;
   });
+  // throwing error syntax cen be used only in synchronous tasks
+  if (!article) {
+    const error = new Error(
+      "Could not find an article for provided article ID."
+    );
+    error.code = 404;
+    throw error;
+  }
+
   res.json({ article: article });
 });
 
@@ -52,6 +61,12 @@ router.get("/user/:uid", (req, res, next) => {
       return articles.push(art);
     }
   });
+  // return next(error) syntax is used with asynchronous tasks
+  if (articles.length === 0) {
+    const error = new Error("Could not find an articles for provided user ID.");
+    error.code = 404;
+    return next(error);
+  }
   res.json({ articles: articles });
 });
 module.exports = router;
