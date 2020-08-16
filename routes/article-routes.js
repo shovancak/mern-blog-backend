@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const HttpError = require("../models/http-error-model");
 
 const DUMMY_ARTICLES = [
   {
@@ -42,11 +43,10 @@ router.get("/:aid", (req, res, next) => {
   });
   // throwing error syntax cen be used only in synchronous tasks
   if (!article) {
-    const error = new Error(
-      "Could not find an article for provided article ID."
+    throw new HttpError(
+      "Could not find an article for provided article ID.",
+      404
     );
-    error.code = 404;
-    throw error;
   }
 
   res.json({ article: article });
@@ -63,10 +63,11 @@ router.get("/user/:uid", (req, res, next) => {
   });
   // return next(error) syntax is used with asynchronous tasks
   if (articles.length === 0) {
-    const error = new Error("Could not find an articles for provided user ID.");
-    error.code = 404;
-    return next(error);
+    return next(
+      new HttpError("Could not find an articles for provided user ID.", 404)
+    );
   }
   res.json({ articles: articles });
 });
+
 module.exports = router;
