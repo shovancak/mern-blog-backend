@@ -1,4 +1,5 @@
 const HttpError = require("../models/http-error-model");
+const uuid = require("uuid/v4");
 
 const DUMMY_ARTICLES = [
   {
@@ -74,6 +75,7 @@ const createNewArticle = (req, res, next) => {
   const { creator, title, imageUrl, description, text } = req.body;
   // creating newPlace object with data from request
   const newPlace = {
+    id: uuid(),
     creator: creator,
     title: title,
     imageUrl: imageUrl,
