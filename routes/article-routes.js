@@ -9,4 +9,7 @@ router.get("/:aid", articleControllers.getArticleByArticleID);
 // Get list of articles created by specific user/creator by creatorID
 router.get("/user/:uid", articleControllers.getListOfArticlesByUserID);
 
+// Create a new article
+router.post("/", articleControllers.createNewArticle);
+
 module.exports = router;
