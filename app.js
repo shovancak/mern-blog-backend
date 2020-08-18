@@ -4,6 +4,8 @@ const articleRoutes = require("./routes/article-routes");
 const app = express();
 const PORT = 5000;
 
+app.use(bodyParser.json());
+
 app.use("/api/articles", articleRoutes);
 
 // default error handling middleware provided by Express
