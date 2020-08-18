@@ -68,5 +68,25 @@ const getListOfArticlesByUserID = (req, res, next) => {
   res.json({ articles: articles });
 };
 
+// Create a new article
+const createNewArticle = (req, res, next) => {
+  // extracting data from incoming request
+  const { creator, title, imageUrl, description, text } = req.body;
+  // creating newPlace object with data from request
+  const newPlace = {
+    creator: creator,
+    title: title,
+    imageUrl: imageUrl,
+    description: description,
+    text: text,
+  };
+  // addding new created place at the begining (.unshift) of articles array
+  DUMMY_ARTICLES.unshift(newPlace);
+  // response from server
+  // 201 - code for something NEW succsessfully created on server
+  res.status(201).json({ place: newPlace });
+};
+
 exports.getArticleByArticleID = getArticleByArticleID;
 exports.getListOfArticlesByUserID = getListOfArticlesByUserID;
+exports.createNewArticle = createNewArticle;
