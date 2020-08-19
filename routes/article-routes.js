@@ -15,4 +15,7 @@ router.post("/", articleControllers.createNewArticle);
 // Updating existing article
 router.patch("/:aid", articleControllers.updateExistingArticleById);
 
+// Deleting article
+router.delete("/:aid", articleControllers.deleteArticle);
+
 module.exports = router;
