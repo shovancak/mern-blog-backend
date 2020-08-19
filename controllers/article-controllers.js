@@ -54,14 +54,14 @@ const getArticleByArticleID = (req, res, next) => {
 // Get list of articles created by specific user/creator by creatorID
 const getListOfArticlesByUserID = (req, res, next) => {
   const userId = req.params.uid;
-  const articles = [];
+  let articles = [];
   DUMMY_ARTICLES.map((art) => {
     if (art.creator === userId) {
       return articles.push(art);
     }
   });
   // return next(error) syntax is used with asynchronous tasks
-  if (articles.length === 0) {
+  if (!articles || articles.length === 0) {
     return next(
       new HttpError("Could not find an articles for provided user ID.", 404)
     );
