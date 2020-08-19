@@ -12,4 +12,7 @@ router.get("/user/:uid", articleControllers.getListOfArticlesByUserID);
 // Create a new article
 router.post("/", articleControllers.createNewArticle);
 
+// Updating existing article
+router.patch("/:aid", articleControllers.updateExistingArticleById);
+
 module.exports = router;
