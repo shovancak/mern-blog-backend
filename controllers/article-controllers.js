@@ -1,7 +1,7 @@
 const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
 
-const DUMMY_ARTICLES = [
+let DUMMY_ARTICLES = [
   {
     id: "a1",
     creator: "u1",
@@ -114,7 +114,18 @@ const updateExistingArticleById = (req, res, next) => {
   res.status(200).json({ article: articleToUpdate });
 };
 
+// Deleting article
+const deleteArticle = (req, res, next) => {
+  //Extracting ID from URL
+  const articleId = req.params.aid;
+  // Returning new array of articles without article which ID doesnt matches ID passed by URL
+  // If ID of article from URL matches ID of article in array, it will be filltered
+  DUMMY_ARTICLES = DUMMY_ARTICLES.filter((article) => article.id !== articleId);
+  res.status(200).json({ message: "Article has been deleted." });
+};
+
 exports.getArticleByArticleID = getArticleByArticleID;
 exports.getListOfArticlesByUserID = getListOfArticlesByUserID;
 exports.createNewArticle = createNewArticle;
 exports.updateExistingArticleById = updateExistingArticleById;
+exports.deleteArticle = deleteArticle;
