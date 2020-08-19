@@ -89,6 +89,32 @@ const createNewArticle = (req, res, next) => {
   res.status(201).json({ place: newPlace });
 };
 
+// Updating existing article
+const updateExistingArticleById = (req, res, next) => {
+  // Getting data that can be updated from request
+  const { title, description, text } = req.body;
+  const articleId = req.params.aid;
+  // Spread operator will create copy of article we are going to update
+  const articleToUpdate = {
+    ...DUMMY_ARTICLES.find((article) => {
+      return article.id === articleId;
+    }),
+  };
+  //Finding index of article in array of DUMMY_ARTICLES
+  const articleIndex = DUMMY_ARTICLES.findIndex((article) => {
+    return article.id === articleId;
+  });
+  // Updating data of article in array with data from request
+  articleToUpdate.title = title;
+  articleToUpdate.description = description;
+  articleToUpdate.text = text;
+  // Replacing article in array be updated article
+  DUMMY_ARTICLES[articleIndex] = articleToUpdate;
+
+  res.status(200).json({ article: articleToUpdate });
+};
+
 exports.getArticleByArticleID = getArticleByArticleID;
 exports.getListOfArticlesByUserID = getListOfArticlesByUserID;
 exports.createNewArticle = createNewArticle;
+exports.updateExistingArticleById = updateExistingArticleById;
