@@ -1,5 +1,6 @@
 const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
+const { validationResult } = require("express-validator");
 
 let DUMMY_ARTICLES = [
   {
@@ -71,14 +72,20 @@ const getListOfArticlesByUserID = (req, res, next) => {
 
 // Create a new article
 const createNewArticle = (req, res, next) => {
+  //Using validationResults(req) method of express-validator for validating inputs provided by user
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return next(
+      new HttpError("Invalid input data passed, please check your data.", 422)
+    );
+  }
   // extracting data from incoming request
-  const { creator, title, imageUrl, description, text } = req.body;
+  const { creator, title, description, text } = req.body;
   // creating newArticle object with data from request
   const newArticle = {
     id: uuid41(),
     creator: creator,
     title: title,
-    imageUrl: imageUrl,
     description: description,
     text: text,
   };

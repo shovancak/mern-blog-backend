@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const HttpError = require("../models/http-error-model");
 const articleControllers = require("../controllers/article-controllers");
+const { check } = require("express-validator");
 
 // Get specific article by articleID
 router.get("/:aid", articleControllers.getArticleByArticleID);
@@ -10,10 +11,28 @@ router.get("/:aid", articleControllers.getArticleByArticleID);
 router.get("/user/:uid", articleControllers.getListOfArticlesByUserID);
 
 // Create a new article
-router.post("/", articleControllers.createNewArticle);
+//Using check method of express-validator for validating inputs provided by user
+router.post(
+  "/",
+  [
+    check("title").not().isEmpty(),
+    check("description").not().isEmpty(),
+    check("text").not().isEmpty(),
+  ],
+  articleControllers.createNewArticle
+);
 
 // Updating existing article
-router.patch("/:aid", articleControllers.updateExistingArticleById);
+//Using check method of express-validator for validating inputs provided by user
+router.patch(
+  "/:aid",
+  [
+    check("title").not().isEmpty(),
+    check("description").not().isEmpty(),
+    check("text").not().isEmpty(),
+  ],
+  articleControllers.updateExistingArticleById
+);
 
 // Deleting article
 router.delete("/:aid", articleControllers.deleteArticle);
