@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const articleRoutes = require("./routes/article-routes");
+const userRoutes = require("./routes/user-routes");
 const HttpError = require("./models/http-error-model");
 const app = express();
 const PORT = 5000;
@@ -8,6 +9,7 @@ const PORT = 5000;
 app.use(bodyParser.json());
 
 app.use("/api/articles", articleRoutes);
+app.use("/api/users", userRoutes);
 
 // middleware handling ONLY routes, which have not been handled before
 // reached ONLY if we have some request, which didnt get response before
