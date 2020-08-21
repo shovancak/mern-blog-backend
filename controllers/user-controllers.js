@@ -49,6 +49,15 @@ const getListOfAllUsers = (req, res, next) => {
 // Signing up new user
 const signupUser = (req, res, next) => {
   const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return next(new HttpError("All credentials are needed.", 404));
+  }
+  const existingUser = DUMMY_USERS.find((user) => {
+    return user.email === email;
+  });
+  if (existingUser) {
+    return next(new HttpError("User with provided email already exists.", 422));
+  }
   const newUser = {
     id: uuid41(),
     name: name,
