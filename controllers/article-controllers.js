@@ -98,6 +98,13 @@ const createNewArticle = (req, res, next) => {
 
 // Updating existing article
 const updateExistingArticleById = (req, res, next) => {
+  //Using validationResults(req) method of express-validator for validating inputs provided by user
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return next(
+      new HttpError("Invalid input data passed, please check your data.", 422)
+    );
+  }
   // Getting data that can be updated from request
   const { title, description, text } = req.body;
   const articleId = req.params.aid;
@@ -125,6 +132,10 @@ const updateExistingArticleById = (req, res, next) => {
 const deleteArticle = (req, res, next) => {
   //Extracting ID from URL
   const articleId = req.params.aid;
+  //Handling deleting if there is no place with provided id to delete
+  if (!DUMMY_ARTICLES.find((article) => article.id === articleId)) {
+    throw new HttpError("Could not find article with provided ID.", 404);
+  }
   // Returning new array of articles without article which ID doesnt matches ID passed by URL
   // If ID of article from URL matches ID of article in array, it will be filltered
   DUMMY_ARTICLES = DUMMY_ARTICLES.filter((article) => article.id !== articleId);
