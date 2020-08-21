@@ -61,5 +61,20 @@ const signupUser = (req, res, next) => {
     .json({ message: "New user successfully Sign Up.", user: newUser });
 };
 
+// Loging in existing user
+const loginUser = (req, res, next) => {
+  const { email, password } = req.body;
+  const identifiedUser = DUMMY_USERS.find((user) => {
+    if (user.email === email) {
+      return user;
+    }
+  });
+  if (!identifiedUser || identifiedUser.password !== password) {
+    return next(new HttpError("Wrong credentials, please try again.", 404));
+  }
+  res.status(200).json({ message: "User successfully logged in." });
+};
+
 exports.getListOfAllUsers = getListOfAllUsers;
 exports.signupUser = signupUser;
+exports.loginUser = loginUser;
