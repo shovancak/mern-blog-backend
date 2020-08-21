@@ -1,5 +1,6 @@
 const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
+const { validationResult } = require("express-validator");
 
 let DUMMY_USERS = [
   {
@@ -48,6 +49,13 @@ const getListOfAllUsers = (req, res, next) => {
 
 // Signing up new user
 const signupUser = (req, res, next) => {
+  //Using validationResult(req) method of express-validator for validating inputs provided by user
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    return next(
+      new HttpError("Invalid input data passed, please check your data.", 422)
+    );
+  }
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
     return next(new HttpError("All credentials are needed.", 404));
@@ -65,9 +73,10 @@ const signupUser = (req, res, next) => {
     password: password,
   };
   DUMMY_USERS.push(newUser);
-  res
-    .status(201)
-    .json({ message: "New user successfully Sign Up.", user: newUser });
+  res.status(201).json({
+    message: "New user successfully Sign Up.",
+    user: newUser,
+  });
 };
 
 // Loging in existing user
