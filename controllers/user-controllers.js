@@ -5,37 +5,32 @@ let DUMMY_USERS = [
   {
     id: "u1",
     name: "Samuel",
-    image: "https://i.imgur.com/DcylgJM.jpg",
-    articleId: 11,
-    amount: 2,
+    email: "first@gmail.com",
+    password: "first1",
   },
   {
     id: "u2",
     name: "Max",
-    image: "https://i.imgur.com/DcylgJM.jpg",
-    articleId: 22,
-    amount: 1,
+    email: "second@gmail.com",
+    password: "second2",
   },
   {
     id: "u3",
     name: "Oliver",
-    image: "https://i.imgur.com/DcylgJM.jpg",
-    articleId: 33,
-    amount: 1,
+    email: "third@gmail.com",
+    password: "third3",
   },
   {
     id: "u4",
     name: "Andrei",
-    image: "https://i.imgur.com/DcylgJM.jpg",
-    articleId: 44,
-    amount: 3,
+    email: "fourth@gmail.com",
+    password: "fourth4",
   },
   {
     id: "u5",
     name: "Yhua",
-    image: "https://i.imgur.com/DcylgJM.jpg",
-    articleId: 55,
-    amount: 4,
+    email: "fifth@gmail.com",
+    password: "fifth5",
   },
 ];
 
@@ -43,9 +38,7 @@ let DUMMY_USERS = [
 const getListOfAllUsers = (req, res, next) => {
   const users = [];
   DUMMY_USERS.map((user) => {
-    if (user.id) {
-      return users.push(user);
-    }
+    return users.push(user);
   });
   if (!users || users.length === 0) {
     return next(new HttpError("Could not find any users.", 404));
@@ -53,4 +46,20 @@ const getListOfAllUsers = (req, res, next) => {
   res.status(200).json({ users: users });
 };
 
+// Signing up new user
+const signupUser = (req, res, next) => {
+  const { name, email, password } = req.body;
+  const newUser = {
+    id: uuid41(),
+    name: name,
+    email: email,
+    password: password,
+  };
+  DUMMY_USERS.push(newUser);
+  res
+    .status(201)
+    .json({ message: "New user successfully Sign Up.", user: newUser });
+};
+
 exports.getListOfAllUsers = getListOfAllUsers;
+exports.signupUser = signupUser;
