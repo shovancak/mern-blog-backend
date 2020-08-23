@@ -120,7 +120,7 @@ const createNewArticle = async (req, res, next) => {
 };
 
 // Updating existing article
-const updateExistingArticleById = (req, res, next) => {
+const updateExistingArticleById = async (req, res, next) => {
   //Using validationResults(req) method of express-validator for validating inputs provided by user
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
@@ -131,24 +131,36 @@ const updateExistingArticleById = (req, res, next) => {
   // Getting data that can be updated from request
   const { title, description, text } = req.body;
   const articleId = req.params.aid;
-  // Spread operator will create copy of article we are going to update
-  const articleToUpdate = {
-    ...DUMMY_ARTICLES.find((article) => {
-      return article.id === articleId;
-    }),
-  };
-  //Finding index of article in array of DUMMY_ARTICLES
-  const articleIndex = DUMMY_ARTICLES.findIndex((article) => {
-    return article.id === articleId;
-  });
-  // Updating data of article in array with data from request
+
+  //Getting article for updating from database
+  let articleToUpdate;
+  try {
+    articleToUpdate = await Article.findById(articleId);
+  } catch (err) {
+    const error = new HttpError("Could not update article.", 500);
+    return next(error);
+  }
+
+  // Updating/changing values
   articleToUpdate.title = title;
   articleToUpdate.description = description;
   articleToUpdate.text = text;
-  // Replacing article in array be updated article
-  DUMMY_ARTICLES[articleIndex] = articleToUpdate;
 
-  res.status(200).json({ article: articleToUpdate });
+  //Saving updated article/values into database
+  try {
+    await articleToUpdate.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Updateing article failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
+  //response
+  res
+    .status(200)
+    .json({ article: articleToUpdate.toObject({ getters: true }) });
 };
 
 // Deleting article
