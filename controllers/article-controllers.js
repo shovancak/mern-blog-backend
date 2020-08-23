@@ -1,6 +1,7 @@
 const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
 const { validationResult } = require("express-validator");
+const Article = require("../models/article");
 
 let DUMMY_ARTICLES = [
   {
@@ -71,7 +72,7 @@ const getListOfArticlesByUserID = (req, res, next) => {
 };
 
 // Create a new article
-const createNewArticle = (req, res, next) => {
+const createNewArticle = async (req, res, next) => {
   //Using validationResults(req) method of express-validator for validating inputs provided by user
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
@@ -82,15 +83,25 @@ const createNewArticle = (req, res, next) => {
   // extracting data from incoming request
   const { creator, title, description, text } = req.body;
   // creating newArticle object with data from request
-  const newArticle = {
-    id: uuid41(),
+  const newArticle = new Article({
     creator: creator,
     title: title,
+    imageUrl:
+      "https://s3-torquehhvm-wpengine.netdna-ssl.com/uploads/2016/01/learn-javascript-for-wordpress-1-e1453745365916-1-e1453745455742.jpg",
     description: description,
     text: text,
-  };
-  // addding new created article at the begining (.unshift) of articles array
-  DUMMY_ARTICLES.unshift(newArticle);
+  });
+  // Storing documnet in mongoDB
+  try {
+    await newArticle.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Creating article failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
   // response from server
   // 201 - code for something NEW succsessfully created on server
   res.status(201).json({ article: newArticle });
