@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 const articleRoutes = require("./routes/article-routes");
 const userRoutes = require("./routes/user-routes");
 const HttpError = require("./models/http-error-model");
@@ -30,6 +31,16 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "An unknown error occurred!" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is runnig at port: ${PORT}`);
-});
+mongoose
+  .connect(
+    "mongodb+srv://samuel:83461834Sh@cluster0-eamri.mongodb.net/articles?retryWrites=true&w=majority",
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server is runnig at port: ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
