@@ -37,38 +37,50 @@ let DUMMY_ARTICLES = [
 ];
 
 // Get specific article by articleID
-const getArticleByArticleID = (req, res, next) => {
+const getArticleByArticleID = async (req, res, next) => {
   const articleId = req.params.aid;
-  const article = DUMMY_ARTICLES.find((art) => {
-    return art.id === articleId;
-  });
+  let article;
+  try {
+    article = await Article.findById(articleId);
+  } catch (err) {
+    const error = new HttpError("Could not find article.", 500);
+    return next(error);
+  }
+
   // throwing error syntax cen be used only in synchronous tasks
   if (!article) {
-    throw new HttpError(
+    const error = new HttpError(
       "Could not find an article for provided article ID.",
       404
     );
+    return next(error);
   }
 
-  res.json({ article: article });
+  res.json({ article: article.toObject({ getters: true }) });
 };
 
 // Get list of articles created by specific user/creator by creatorID
-const getListOfArticlesByUserID = (req, res, next) => {
+const getListOfArticlesByUserID = async (req, res, next) => {
   const userId = req.params.uid;
-  let articles = [];
-  DUMMY_ARTICLES.map((art) => {
-    if (art.creator === userId) {
-      return articles.push(art);
-    }
-  });
+  let articles;
+  try {
+    articles = await Article.find({ creator: userId });
+  } catch (err) {
+    const error = new HttpError(
+      "Could not get list of articles for provided user ID.",
+      500
+    );
+    return next(error);
+  }
   // return next(error) syntax is used with asynchronous tasks
   if (!articles || articles.length === 0) {
     return next(
       new HttpError("Could not find an articles for provided user ID.", 404)
     );
   }
-  res.json({ articles: articles });
+  res.json({
+    articles: articles.map((article) => article.toObject({ getters: true })),
+  });
 };
 
 // Create a new article
