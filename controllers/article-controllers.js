@@ -164,16 +164,17 @@ const updateExistingArticleById = async (req, res, next) => {
 };
 
 // Deleting article
-const deleteArticle = (req, res, next) => {
+const deleteArticle = async (req, res, next) => {
   //Extracting ID from URL
   const articleId = req.params.aid;
-  //Handling deleting if there is no place with provided id to delete
-  if (!DUMMY_ARTICLES.find((article) => article.id === articleId)) {
-    throw new HttpError("Could not find article with provided ID.", 404);
+
+  let placeToDelete;
+  try {
+    placeToDelete = await Article.findByIdAndDelete(articleId);
+  } catch (err) {
+    const error = new HttpError("Could not delete article.", 500);
+    return next(error);
   }
-  // Returning new array of articles without article which ID doesnt matches ID passed by URL
-  // If ID of article from URL matches ID of article in array, it will be filltered
-  DUMMY_ARTICLES = DUMMY_ARTICLES.filter((article) => article.id !== articleId);
   res.status(200).json({ message: "Article has been deleted." });
 };
 
