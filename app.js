@@ -34,7 +34,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(
     "mongodb+srv://samuel:83461834Sh@cluster0-eamri.mongodb.net/articles?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
+    { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   )
   .then(() => {
     app.listen(PORT, () => {
