@@ -1,6 +1,7 @@
 const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
 const { validationResult } = require("express-validator");
+const User = require("../models/user");
 
 let DUMMY_USERS = [
   {
@@ -48,7 +49,7 @@ const getListOfAllUsers = (req, res, next) => {
 };
 
 // Signing up new user
-const signupUser = (req, res, next) => {
+const signupUser = async (req, res, next) => {
   //Using validationResult(req) method of express-validator for validating inputs provided by user
   const validationErrors = validationResult(req);
   if (!validationErrors.isEmpty()) {
@@ -56,26 +57,39 @@ const signupUser = (req, res, next) => {
       new HttpError("Invalid input data passed, please check your data.", 422)
     );
   }
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return next(new HttpError("All credentials are needed.", 404));
+  const { name, email, password, articles } = req.body;
+
+  //Checking if users email (user) exist already in database
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (err) {
+    error = new HttpError("Creating user failed, please try again.", 500);
+    return next(error);
   }
-  const existingUser = DUMMY_USERS.find((user) => {
-    return user.email === email;
-  });
+
   if (existingUser) {
-    return next(new HttpError("User with provided email already exists.", 422));
+    const error = new HttpError("User already exists.", 422);
+    return next(error);
   }
-  const newUser = {
-    id: uuid41(),
-    name: name,
-    email: email,
-    password: password,
-  };
-  DUMMY_USERS.push(newUser);
+
+  const newUser = new User({
+    name,
+    email,
+    password,
+    imageUrl: "https://i.imgur.com/DcylgJM.jpg",
+    articles,
+  });
+
+  try {
+    await newUser.save();
+  } catch (err) {
+    const error = new HttpError("Signing up failed, please try again.", 500);
+    return next(error);
+  }
+
   res.status(201).json({
-    message: "New user successfully Sign Up.",
-    user: newUser,
+    user: newUser.toObject({ getters: true }),
   });
 };
 
