@@ -2,50 +2,26 @@ const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
-
-let DUMMY_USERS = [
-  {
-    id: "u1",
-    name: "Samuel",
-    email: "first@gmail.com",
-    password: "first1",
-  },
-  {
-    id: "u2",
-    name: "Max",
-    email: "second@gmail.com",
-    password: "second2",
-  },
-  {
-    id: "u3",
-    name: "Oliver",
-    email: "third@gmail.com",
-    password: "third3",
-  },
-  {
-    id: "u4",
-    name: "Andrei",
-    email: "fourth@gmail.com",
-    password: "fourth4",
-  },
-  {
-    id: "u5",
-    name: "Yhua",
-    email: "fifth@gmail.com",
-    password: "fifth5",
-  },
-];
+const user = require("../models/user");
 
 // Getting list of all registrated users
-const getListOfAllUsers = (req, res, next) => {
-  const users = [];
-  DUMMY_USERS.map((user) => {
-    return users.push(user);
-  });
+const getListOfAllUsers = async (req, res, next) => {
+  let users;
+  try {
+    users = await User.find({}, "-password"); // return User object without password
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, can not get users, please try again.",
+      500
+    );
+    return next(err);
+  }
   if (!users || users.length === 0) {
     return next(new HttpError("Could not find any users.", 404));
   }
-  res.status(200).json({ users: users });
+  res
+    .status(200)
+    .json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
 // Signing up new user
