@@ -94,15 +94,19 @@ const signupUser = async (req, res, next) => {
 };
 
 // Loging in existing user
-const loginUser = (req, res, next) => {
+const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
-  const identifiedUser = DUMMY_USERS.find((user) => {
-    if (user.email === email) {
-      return user;
-    }
-  });
+
+  let identifiedUser;
+  try {
+    identifiedUser = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError("Logging in failed, please try again.", 500);
+    return next(error);
+  }
+
   if (!identifiedUser || identifiedUser.password !== password) {
-    return next(new HttpError("Wrong credentials, please try again.", 404));
+    return next(new HttpError("Wrong credentials, please try again.", 401));
   }
   res.status(200).json({ message: "User successfully logged in." });
 };
