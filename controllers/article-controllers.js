@@ -62,13 +62,12 @@ const createNewArticle = async (req, res, next) => {
     );
   }
   // extracting data from incoming request
-  const { creator, title, description, text } = req.body;
+  const { creator, title, description, text, imageUrl } = req.body;
   // creating newArticle object with data from request
   const newArticle = new Article({
     creator: creator,
     title: title,
-    imageUrl:
-      "https://s3-torquehhvm-wpengine.netdna-ssl.com/uploads/2016/01/learn-javascript-for-wordpress-1-e1453745365916-1-e1453745455742.jpg",
+    imageUrl: imageUrl,
     description: description,
     text: text,
   });
@@ -122,7 +121,7 @@ const updateExistingArticleById = async (req, res, next) => {
     );
   }
   // Getting data that can be updated from request
-  const { title, description, text } = req.body;
+  const { title, description, text, imageUrl } = req.body;
   const articleId = req.params.aid;
 
   //Getting article for updating from database
@@ -138,6 +137,7 @@ const updateExistingArticleById = async (req, res, next) => {
   articleToUpdate.title = title;
   articleToUpdate.description = description;
   articleToUpdate.text = text;
+  articleToUpdate.imageUrl = imageUrl;
 
   //Saving updated article/values into database
   try {
