@@ -2,7 +2,6 @@ const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
-const user = require("../models/user");
 
 // Getting list of all registrated users
 const getListOfAllUsers = async (req, res, next) => {
@@ -33,7 +32,7 @@ const signupUser = async (req, res, next) => {
       new HttpError("Invalid input data passed, please check your data.", 422)
     );
   }
-  const { name, email, password, articles } = req.body;
+  const { name, email, password } = req.body;
 
   //Checking if users email (user) exist already in database
   let existingUser;
@@ -54,7 +53,7 @@ const signupUser = async (req, res, next) => {
     email,
     password,
     imageUrl: "https://i.imgur.com/DcylgJM.jpg",
-    articles,
+    articles: [],
   });
 
   try {
