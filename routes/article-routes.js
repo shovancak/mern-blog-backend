@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const HttpError = require("../models/http-error-model");
 const articleControllers = require("../controllers/article-controllers");
 const { check } = require("express-validator");
 

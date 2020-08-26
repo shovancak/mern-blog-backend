@@ -161,6 +161,7 @@ const deleteArticle = async (req, res, next) => {
   //Extracting ID from URL
   const articleId = req.params.aid;
 
+  //Finding article by ID and conecting to creator of article by .populate method
   let articleToDelete;
   try {
     articleToDelete = await Article.findById(articleId).populate("creator");
@@ -174,6 +175,7 @@ const deleteArticle = async (req, res, next) => {
     return next(error);
   }
 
+  // Session and transaction for deleting article and also deleting article ID from creator
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
