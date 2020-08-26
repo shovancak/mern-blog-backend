@@ -2,6 +2,8 @@ const HttpError = require("../models/http-error-model");
 const { v4: uuid41 } = require("uuid");
 const { validationResult } = require("express-validator");
 const Article = require("../models/article");
+const User = require("../models/user");
+const mongoose = require("mongoose");
 
 // Get specific article by articleID
 const getArticleByArticleID = async (req, res, next) => {
@@ -70,12 +72,36 @@ const createNewArticle = async (req, res, next) => {
     description: description,
     text: text,
   });
-  // Storing documnet in mongoDB
+
+  //Checking if user exists
+  let user;
   try {
-    await newArticle.save();
+    user = await User.findById(creator);
   } catch (err) {
     const error = new HttpError(
-      "Creating article failed, please try again.",
+      "Creating new article failed, please try agian.",
+      500
+    );
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError("User with provided ID does not exist.", 404);
+    return next(error);
+  }
+
+  console.log(user);
+  // Storing documnet in mongoDB
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await newArticle.save({ session: sess });
+    user.articles.push(newArticle);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      "Creating place failed, please try again.",
       500
     );
     return next(error);
