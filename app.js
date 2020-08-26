@@ -9,6 +9,16 @@ const PORT = 5000;
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+  next();
+});
+
 app.use("/api/articles", articleRoutes);
 app.use("/api/users", userRoutes);
 
@@ -37,9 +47,7 @@ mongoose
     { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }
   )
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server is runnig at port: ${PORT}`);
-    });
+    app.listen(PORT);
   })
   .catch((error) => {
     console.log(error);
