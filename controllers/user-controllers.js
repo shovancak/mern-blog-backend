@@ -31,7 +31,7 @@ const signupUser = async (req, res, next) => {
       new HttpError("Invalid input data passed, please check your data.", 422)
     );
   }
-  const { name, email, password } = req.body;
+  const { name, email, password, imageUrl } = req.body;
 
   //Checking if users email (user) exist already in database
   let existingUser;
@@ -51,7 +51,7 @@ const signupUser = async (req, res, next) => {
     name,
     email,
     password,
-    imageUrl: "https://i.imgur.com/DcylgJM.jpg",
+    imageUrl: imageUrl,
     articles: [],
   });
 
