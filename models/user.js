@@ -21,7 +21,13 @@ const userSchema = new Schema({
     required: true,
     minlength: 6,
   },
-  articles: { type: String, required: true },
+  articles: [
+    {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: "Article",
+    },
+  ],
 });
 
 userSchema.plugin(uniquevalidator);

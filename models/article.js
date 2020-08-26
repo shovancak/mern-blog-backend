@@ -3,8 +3,9 @@ const Schema = mongoose.Schema;
 
 const articleSchema = new Schema({
   creator: {
-    type: String,
+    type: mongoose.Types.ObjectId,
     required: true,
+    ref: "User",
   },
   title: {
     type: String,
