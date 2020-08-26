@@ -161,11 +161,31 @@ const deleteArticle = async (req, res, next) => {
   //Extracting ID from URL
   const articleId = req.params.aid;
 
-  let placeToDelete;
+  let articleToDelete;
   try {
-    placeToDelete = await Article.findByIdAndDelete(articleId);
+    articleToDelete = await Article.findById(articleId).populate("creator");
   } catch (err) {
     const error = new HttpError("Could not delete article.", 500);
+    return next(error);
+  }
+
+  if (!articleToDelete) {
+    const error = new HttpError("Could not find article for provided ID", 404);
+    return next(error);
+  }
+
+  try {
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await articleToDelete.remove({ session: sess });
+    articleToDelete.creator.articles.pull(articleToDelete);
+    await articleToDelete.creator.save({ session: sess });
+    await sess.commitTransaction();
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not delete article.",
+      500
+    );
     return next(error);
   }
   res.status(200).json({ message: "Article has been deleted." });
