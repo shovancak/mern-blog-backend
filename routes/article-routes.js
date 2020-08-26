@@ -17,6 +17,7 @@ router.post(
     check("title").not().isEmpty(),
     check("description").not().isEmpty(),
     check("text").not().isEmpty(),
+    check("imageUrl").not().isEmpty(),
   ],
   articleControllers.createNewArticle
 );
@@ -29,6 +30,7 @@ router.patch(
     check("title").not().isEmpty(),
     check("description").not().isEmpty(),
     check("text").not().isEmpty(),
+    check("imageUrl").not().isEmpty(),
   ],
   articleControllers.updateExistingArticleById
 );
